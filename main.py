@@ -38,33 +38,32 @@ def get_count_click(token, short_link):
 
 def is_shorten_link(token, url):
     parsed_url = urlparse(url)
-    url_api = 'https://api.vk.ru/method/utils.checkLink'
+    url_api = 'https://api.vk.ru/method/utils.getLinkStats'
     params = {
         'access_token': token,
-        'url': url,
+        'key': parsed_url.path.strip('/'),
         'v': 5.199,
     }
 
     response = requests.post(url_api, params=params)
     response.raise_for_status()
 
-    if response.json()["response"]["status"] == "not_banned":
-        if parsed_url.netloc == 'vk.cc':
-            return True
-        else:
-            return False
+    if "response" in response.json():
+        return True
+    else:
+        return False 
 
 
 def main():
     load_dotenv()
-    token = os.getenv('TOKEN')
+    token = os.getenv('VK_TOKEN')
     url = input('Введите ссылку для сокращения: ')
     try:
-        if not is_shorten_link(token, url):
+        if is_shorten_link(token, url):
+            print(f"Количество кликов по ссылке: {get_count_click(token, url)}")
+        else:
             short_url = get_shorten_link(token, url)
             print(f"Сокращённая ссылка: {short_url}")
-        else:
-            print(f"Количество кликов по ссылке: {get_count_click(token, url)}")
     except requests.exceptions.HTTPError as error:
         print(f'Error: {error}')
 
