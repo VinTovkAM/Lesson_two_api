@@ -50,13 +50,11 @@ def is_shorten_link(token, url):
 
     if "response" in response.json():
         return True
-    else:
-        return False 
 
 
 def main():
     load_dotenv()
-    token = os.getenv('VK_TOKEN')
+    token = os.environ['VK_TOKEN']
     url = input('Введите ссылку для сокращения: ')
     try:
         if is_shorten_link(token, url):
